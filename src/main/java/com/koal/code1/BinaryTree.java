@@ -1,0 +1,153 @@
+package com.koal.code1;
+
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+import java.util.stream.Collectors;
+
+/**
+ * 参考视频 https://www.bilibili.com/video/BV1k64y1a7cs
+ *
+ * <p>
+ * 实现要求：
+ * 1、根据已有的代码片段，创建二叉搜索树；
+ * 2、用 【后序】遍历输出结果；
+ * 3、使用递归、非递归二种方式实现遍历；
+ * 4、注意编写代码注释。
+ */
+public class BinaryTree {
+
+    //记录节点，便于输出
+    private static List<String> resList;
+
+    public static void main(String[] args) {
+
+        final int[] values = {5, 3, 8, 1, 2, 4, 6, 7, 9, 0};
+
+        System.out.println("Create BST: ");
+        Node root = createBinaryTree(values);
+
+        resList = new ArrayList<>();
+        System.out.println("Traversing the BST with recursive algorithm: ");
+        inOrderTransvalWithRecursive(root);
+        //格式化，输出
+        String res = resList.stream().collect(Collectors.joining(","));
+        System.out.println(res);
+
+        resList = new ArrayList<>();
+        System.out.println("Traversing the BST with iterative algorithm: ");
+        inOrderTransvalWithIterate(root);
+        //格式化，输出
+        String res1 = resList.stream().collect(Collectors.joining(","));
+        System.out.println(res1);
+
+        // 此处填写上遍历的结果，形如：a, b , c, d, e, ...
+        /**
+         * Create BST:
+         * Traversing the BST with recursive algorithm:
+         * 0,2,1,4,3,7,6,9,8,5
+         * Traversing the BST with iterative algorithm:
+         * 0,2,1,4,3,7,6,9,8,5
+         */
+    }
+
+    // 构建二叉树
+    public static Node createBinaryTree(int[] values) {
+        Node root = new Node();
+        for (int value : values) {
+            buildBiTree(root, value);
+        }
+        return root;
+    }
+
+    private static void buildBiTree(Node node, int value) {
+        //根节点为空
+        if (node.value == null) {
+            node.value = value;
+            return;
+        }
+
+        if (value < node.value) {
+            //如果小于,判断当前结点是否有左叶子结点
+            if (node.left == null) {
+                //左叶子结点为空,设置左叶子结点,并且设置数据
+                node.left = new Node(value);
+            } else {
+                //左叶子结点不为空,递归调用构建二叉树的函数
+                buildBiTree(node.left, value);
+            }
+        } else {
+            //如果大于或等于,判断当前结点是否存在右叶子结点
+            if (node.right == null) {
+                //右叶子结点为空,设置右叶子结点,并且设置数据域
+                node.right = new Node(value);
+            } else {
+                //右叶子几点不为空,递归调用构建二叉树的函数
+                buildBiTree(node.right, value);
+            }
+        }
+    }
+
+
+    // 递归实现
+    public static void inOrderTransvalWithRecursive(Node node) {
+        //结束条件
+        if (node == null) {
+            return;
+        }
+
+        //后序递归遍历，左节点、右节点、根节点
+        inOrderTransvalWithRecursive(node.left);
+        inOrderTransvalWithRecursive(node.right);
+        resList.add(node.value.toString());
+    }
+
+    // 非递归实现
+    public static void inOrderTransvalWithIterate(Node root) {
+        //基于栈的消除算法
+        if (root != null) {
+            Stack<Node> s1 = new Stack<>();
+            Stack<Node> s2 = new Stack<>();
+            //s1 压栈
+            s1.push(root);
+            while (!s1.isEmpty()) {
+                //s1 消栈记录到 s2
+                root = s1.pop();
+                s2.push(root);
+                if (root.left != null) {
+                    s1.push(root.left);
+                }
+                if (root.right != null) {
+                    s1.push(root.right);
+                }
+            }
+
+            //s2 出栈顺序为 记录输出
+            while (!s2.isEmpty()) {
+                resList.add(s2.pop().value.toString());
+            }
+        }
+
+
+    }
+
+    private static class Node {
+
+        Integer value;
+        Node left;
+        Node right;
+
+        public Node() {
+        }
+
+        public Node(Integer value) {
+            this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return value.toString();
+        }
+    }
+}
